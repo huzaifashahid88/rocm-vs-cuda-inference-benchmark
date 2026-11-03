@@ -53,13 +53,31 @@ At batch size 32 (samples/sec):
 ### Observations
 
 - **Small batches are nearly free on the MI300X.** ResNet-50 fp32 takes about 4.9 ms at batch sizes 1, 4, and 16, so the GPU is far from saturated at small sizes. On the T4, time rose steadily with batch size. I believe this reflects how much spare capacity the larger GPU has, but I did not test the cause.
-- **fp16 helped less on the MI300X than on the T4** in all six comparisons shown below, and ResNet-50 at batch size 1 was slightly slower in fp16 (0.95x). I did not investigate why.
+- **fp16 helped less on the MI300X than on the T4** in all six comparisons shown below, and ResNet-50 at batch size 1 was slightly slower in fp16 (0.95x). See the follow-up test below.
 
 ![fp16 speedup](charts/fp16_speedup.png)
 
 - **fp16 roughly halves memory for BERT and Qwen on both GPUs.** The saving for ResNet-50 is smaller, especially on the MI300X.
 
 ![Peak memory](charts/peak_memory.png)
+
+## Follow-up: why did fp16 help less on the MI300X?
+
+On the MI300X, ResNet-50 and BERT latency was nearly flat (about 4.4 to 5.5 ms) from batch size 1 to 16, which suggested the GPU was not busy enough for precision to matter. To test that, I reran the same models on the MI300X at batch sizes 32 to 512 (`fp16_scaling.py`, results in `results/fp16_scaling_ROCm_AMD_Instinct_MI300X.csv`).
+
+![fp16 speedup vs batch size](charts/fp16_scaling.png)
+
+The fp16 speedup kept growing with batch size:
+
+| Model | Batch 32 | Largest batch tested |
+|---|---|---|
+| ResNet-50 | 1.19x | 1.63x (batch 512) |
+| BERT-base | 2.31x | 3.13x (batch 512, peak 3.17x at 256) |
+| Qwen2.5-0.5B | 2.38x | 3.19x (batch 256) |
+
+This supports the idea that small batches left the GPU underused, so reduced precision had little to save. It does not fully close the gap with the T4 for ResNet-50 (2.43x on the T4 at batch 32 vs 1.63x here at batch 512), and I did not test why.
+
+Caveats: one run per configuration, and the follow-up ran on a different PyTorch build (2.14.1+rocm7.2) than the first MI300X run. Batch-32 latencies matched the first run within roughly 20%.
 
 ## Friction log (the main finding)
 
@@ -80,13 +98,14 @@ Once I was on the machine, the ROCm software was easy: the same script ran with 
 - Add repeated runs and report variance.
 - Time real text generation (tokens per second) for the language model.
 - Test larger models that actually use the MI300X's memory.
-- Investigate why fp16 helped less on the MI300X.
+- Investigate why fp16 gains for ResNet-50 stay smaller than on the T4 even at large batch sizes.
 
 ## Repository layout
 
 ```
 bench.py            the benchmark script
 results/            raw CSVs from each platform
-charts/             throughput, fp16 speedup, and memory charts
+charts/             throughput, fp16 speedup, memory, and fp16 scaling charts
+fp16_scaling.py     follow-up test at larger batch sizes (MI300X)
 FRICTION_LOG.md     setup issues, what was easy, and proposed priorities
 ```

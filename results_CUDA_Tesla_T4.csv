@@ -1,0 +1,25 @@
+backend,gpu,model,precision,batch_size,latency_ms,throughput_samples_per_s,peak_mem_mb,status
+CUDA,Tesla T4,resnet50,fp32,1,9.185,108.9,117.4,ok
+CUDA,Tesla T4,resnet50,fp32,4,17.179,232.8,149.2,ok
+CUDA,Tesla T4,resnet50,fp32,16,48.148,332.3,277.4,ok
+CUDA,Tesla T4,resnet50,fp32,32,93.908,340.8,443.8,ok
+CUDA,Tesla T4,resnet50,fp16,1,6.55,152.7,64.6,ok
+CUDA,Tesla T4,resnet50,fp16,4,6.992,572.1,81.5,ok
+CUDA,Tesla T4,resnet50,fp16,16,20.995,762.1,148.9,ok
+CUDA,Tesla T4,resnet50,fp16,32,38.622,828.5,240.8,ok
+CUDA,Tesla T4,bert-base,fp32,1,11.584,86.3,434.0,ok
+CUDA,Tesla T4,bert-base,fp32,4,26.186,152.8,446.9,ok
+CUDA,Tesla T4,bert-base,fp32,16,100.446,159.3,494.9,ok
+CUDA,Tesla T4,bert-base,fp32,32,184.609,173.3,560.9,ok
+CUDA,Tesla T4,bert-base,fp16,1,6.795,147.2,226.9,ok
+CUDA,Tesla T4,bert-base,fp16,4,7.463,536.0,233.2,ok
+CUDA,Tesla T4,bert-base,fp16,16,20.58,777.5,258.0,ok
+CUDA,Tesla T4,bert-base,fp16,32,41.231,776.1,290.9,ok
+CUDA,Tesla T4,qwen-0.5b,fp32,1,43.956,22.7,1972.4,ok
+CUDA,Tesla T4,qwen-0.5b,fp32,4,145.111,27.6,2205.3,ok
+CUDA,Tesla T4,qwen-0.5b,fp32,16,569.838,28.1,3137.8,ok
+CUDA,Tesla T4,qwen-0.5b,fp32,32,1307.669,24.5,4379.4,ok
+CUDA,Tesla T4,qwen-0.5b,fp16,1,32.282,31.0,999.2,ok
+CUDA,Tesla T4,qwen-0.5b,fp16,4,40.099,99.8,1114.7,ok
+CUDA,Tesla T4,qwen-0.5b,fp16,16,165.833,96.5,1581.0,ok
+CUDA,Tesla T4,qwen-0.5b,fp16,32,330.979,96.7,2202.5,ok
